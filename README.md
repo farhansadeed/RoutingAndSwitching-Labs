@@ -95,8 +95,124 @@ R1# ssh -l netadmin 10.1.3.11
 ![LACP_Configuration_Sim.png](LACP_Configuration_Sim.png)
 LACP_Configuration_Simulation
 
+### Tasks
+Physical connectivity is implemented between the two Layer 2 switches, and the network connectivity between them
+must be configured.
+1. Configure an LACP EtherChannel and number it as 44; configure it between switches SW1 and SW2 using
+interfaces Ethernet0/0 and Ethernet0/1 on both sides. The LACP mode must match on both ends.
+2. Configure the EtherChannel as a trunk link.
+3. Configure the trunk link with 802.1q tags.
+4. Configure VLAN ‘MONITORING’ as the untagged VLAN of the EtherChannel.Solution
+
+### Task 1 + 2 + 3.
+SW1, SW2:
+interface range E0/0 – 1
+channel-group 44 mode active
+no shutdown
+interface Port-channel 44
+switchport trunk encapsulation dot1q
+switchport mode trunk
+
+### Task 4.
+
+SW1, SW2:
+interface Port-channel 44
+switchport trunk native vlan 746
+Don’t forget to save the configuration on both switches:
+SW1, SW2#copy running-config startup-config
+
+
 ![OSPF_Configuration_Simulation](OSPF_Configuration_Simulation.png)
 OSPF_Configuration_Simulation
+Tasks
+IP connectivity between the three routers is configured. OSPF adjacencies must be established.
+1. Configure R1 and R2 Router IDs using the interface IP addresses from the link that is shared between them.
+2. Configure the R2 links with a max value facing R1 and R3. R2 must become the DR. R1 and R3 links facing R2
+must remain with the default OSPF configuration for DR election. Verify the configuration after clearing the OSPF
+process.
+3. Using a host wildcard mask, configure all three routers to advertise their respective Loopback1 networks.
+4. Configure the link between R1 and R3 to disable their ability to add other OSPF routers.
+Solution
+
+### Task 1. Configure R1 and R2 Router IDs using the interface IP addresses from the link that is shared between them.
+R1(config)#router ospf 1
+R1(config-router)#router-id 10.10.12.1
+R2(config)#router ospf 1
+R2(config-router)#router-id 10.10.12.2
+Verification
+R1#clear ip ospf process
+Reset ALL OSPF processes? [no]: yR1#show ip ospf
+Routing Process “ospf 1” with ID 10.10.12.1
+R2#clear ip ospf process
+Reset ALL OSPF processes? [no]: y
+R2#show ip ospf
+Routing Process “ospf 1” with ID 10.10.12.2
+
+### Task 2. Configure the R2 links with a max value facing R1 and R3. R2 must become the DR. R1 and R3 links facing
+R2 must remain with the default OSPF configuration for DR election. Verify the configuration after clearing the OSPF
+process.
+The max value of OSPF priority is 255 so we assign this value to E0/0 and E0/2 interfaces of R2, which are facing R1
+& R3.
+On R2:
+R2(config)#interface e0/0
+R2(config-if)#ip ospf priority 255
+R2(config-if)#interface e0/2
+R2(config-if)#ip ospf priority 255
+R2(config-if)#exit
+R2(config)#exit
+
+Verification
+This task asks us to clear the OSPF process first:
+R2#clear ip ospf process
+Reset ALL OSPF processes? [no]: y
+and then verify the configuration:
+R2#show ip ospf neighbor
+10.10.12.1 1 FULL/BDR 00:00:39 10.10.12.1 Ethernet0/0
+192.168.3.3 1 FULL/BDR 00:00:39 10.10.23.3 Ethernet0/2
+Our configuration is correct if we see our two OSPF neighbors are BDRs so R2 is DR. Or we can check on R1 & R3 to
+see R2’s priority and its role. For example on R1:
+R1#sh ip ospf neighbor
+Neighbor ID Pri State Dead Time Address Interface
+10.10.12.2 255 FULL/DR 00:00:37 10.10.12.2 Ethernet0/0
+192.168.3.3 1 FULL/DR 00:00:37 10.10.13.3 Ethernet0/1
+And on R3:
+R3#show ip ospf neighbor
+Neighbor ID Pri State Dead Time Address Interface
+10.10.12.1 1 FULL/BDR 00:00:37 10.10.13.1 Ethernet0/1
+10.10.12.2 255 FULL/DR 00:00:37 10.10.23.2 Ethernet0/2Task 3. Using a host wildcard mask, configure all three routers to advertise their respective Loopback1 networks.
+This task requires to use “host wildcard mask” so we have to use “0.0.0.0” for the wildcard mask here. Notice that it
+is still correct and match the exact Loopback 1 IP addresses only.
+R1(config)#router ospf 1
+R1(config-router)#network 192.168.1.1 0.0.0.0 area 0
+R2(config)#router ospf 1
+R2(config-router)#network 192.168.2.2 0.0.0.0 area 0
+R3(config)#router ospf 1
+R3(config-router)#network 192.168.3.3 0.0.0.0 area 0
+Verification
+We can check to see if the Loopback1 networks have been advertised with the “show ip route” command or the
+“show ip route ospf” command (this command is same as the first one but it only shows OSPF learned routes):
+R3#show ip route ospf
+10.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
+O 10.10.12.0 [110/2] via 10.10.13.1, 00:13:11, Ethernet0/1
+[110/2] via 10.10.23.2, 00:13:11, Ethernet0/2
+192.168.1.0/32 is subnetted, 1 subnets
+O 192.168.1.1 [110/2] via 10.10.13.1, 00:01:08, Ethernet0/1
+192.168.2.0/32 is subnetted, 1 subnets
+O 192.168.2.2 [110/2] via 10.10.23.2, 00:00:51, Ethernet0/2
+-> We can see two other Loopback1 networks so our configuration was correct.
+
+### Task 4. Configure the link between R1 and R3 to disable their ability to add other OSPF routers.
+Use these commands on both R1 & R3:
+R1,R3(config)#interface e0/1
+R1,R3(config)#ip ospf network point-to-point
+
+After using these commands on both routers the OSPF process on this segment is up again.
+Verification
+R3#sh ip ospf neighbor
+Neighbor ID Pri State Dead Time Address Interface
+10.10.12.1 0 FULL/ - 00:00:39 10.10.13.1 GigabitEthernet0/1
+10.10.12.2 255 FULL/DR 00:00:30 10.10.23.2 GigabitEthernet0/2
+This is a point-to-point network so we cannot add other OSPF routers to R1-R3 segment.
 
 ![VLAN_and_Trunking_Configuration_Simulation](VLAN_and_Trunking_Configuration_Simulation.png)
 VLAN_and_Trunking_Configuration_Simulation
