@@ -92,6 +92,6 @@ R1# ssh -l netadmin 10.1.3.11
 (When prompted for a password, type `N3t4ccess`)
 
 
-![LACP_Configuration_Sim.png](LACP_Configuration_Sim.png.png)
+![LACP_Configuration_Sim.png](LACP_Configuration_Sim.png)
 LACP_Configuration_Simulation
 
