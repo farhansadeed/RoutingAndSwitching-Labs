@@ -100,3 +100,6 @@ OSPF_Configuration_Simulation
 
 ![VLAN_and_Trunking_Configuration_Simulation](VLAN_and_Trunking_Configuration_Simulation.png)
 VLAN_and_Trunking_Configuration_Simulation
+
+![Voice_VLAN_Configuration_Simulation](Voice_VLAN_Configuration_Simulation.png)
+Voice_VLAN_Configuration_Simulation
