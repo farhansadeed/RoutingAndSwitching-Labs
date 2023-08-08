@@ -1,4 +1,4 @@
-# RoutingAndSwitching-Labs
+# CCNA Routing And Switching Labs Practice
 An in-depth repository dedicated to various network topologies explored and tested throughout my CCNA journey. This laboratory represents a structured approach to understanding, designing, and troubleshooting different network configurations.
 
 ![IPServices Simulation](IP_Services_Simulation.png)
