@@ -95,3 +95,6 @@ R1# ssh -l netadmin 10.1.3.11
 ![LACP_Configuration_Sim.png](LACP_Configuration_Sim.png)
 LACP_Configuration_Simulation
 
+![OSPF_Configuration_Simulation](OSPF_Configuration_Simulation.png)
+OSPF_Configuration_Simulation
+
