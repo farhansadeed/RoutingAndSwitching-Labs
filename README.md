@@ -98,3 +98,5 @@ LACP_Configuration_Simulation
 ![OSPF_Configuration_Simulation](OSPF_Configuration_Simulation.png)
 OSPF_Configuration_Simulation
 
+![VLAN_and_Trunking_Configuration_Simulation](VLAN_and_Trunking_Configuration_Simulation.png)
+VLAN_and_Trunking_Configuration_Simulation
