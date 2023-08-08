@@ -7,22 +7,27 @@ An in-depth repository dedicated to various network topologies explored and test
 Tasks
 Connectivity between three routers has been established, and IP services must be configured in the order presented
 to complete the implementation. Tasks assigned include configuration of NAT, NTP, DHCP, and SSH services.
+
 1. All traffic sent from R3 to the R1 Loopback address must be configured for NAT on R2. All source addresses must
 be translated from R3 to the IP address of Ethernet0/0 on R2, while using only a standard access list named NAT. To
 verify, a ping must be successful to the R1 Loopback address sourced from R3. Do not use NVI NAT
 configuration.
-2. Configure R1 as an NTP server and R2 as a client, not as a peer, using the IP address of the R1 Ethernet0/2
+
+3. Configure R1 as an NTP server and R2 as a client, not as a peer, using the IP address of the R1 Ethernet0/2
 interface. Set the clock on the NTP server for midnight on January 1, 2019.
-3. Configure R1 as a DHCP server for the network 10.1.3.0/24 in a pool named NETPOOL. Using a single command,
+
+5. Configure R1 as a DHCP server for the network 10.1.3.0/24 in a pool named NETPOOL. Using a single command,
 exclude addresses 1-10 from the range. Interface Ethernet0/2 on R3 must be issued the IP address of 10.1.3.11 via
 DHCP.
-4. Configure SSH connectivity from R1 to R3, while excluding access via other remote connection protocols. Access
+
+7. Configure SSH connectivity from R1 to R3, while excluding access via other remote connection protocols. Access
 for user netadmin and password N3t4ccess must be set on router R3 using RSA and 1024 bits. Verify connectivity
 using an SSH session from router R1 using a destination address of 10.1.3.11. Do NOT modify console access or
 line numbers to accomplish this task.Solution
-Note: Please check the ACL name username, password, clock… carefully in your exam as they may be different!
+
+
 Task 1:
-R2(config)# ip access-list standard NAT //Note: The name of the ACL may be different so please check carefully!
+R2(config)# ip access-list standard NAT 
 R2(config-std-nacl)#permit 10.2.3.3
 R2(config-std-nacl)#permit 192.168.3.1
 R2(config-std-nacl)#permit 10.1.3.11
